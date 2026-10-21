@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Epidemiology MCQ Exam</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+:root{--bg:#f3f7f6;--surface:#fff;--ink:#14292b;--muted:#5b7073;--line:#cfdcda;--accent:#0e6b66;--accent-ink:#fff;--sel:#dff1ee;--good:#17724a;--goodbg:#e2f4ea;--bad:#a72b2b;--badbg:#fbe6e4;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1b1c;--surface:#152728;--ink:#e6f1ef;--muted:#93aeab;--line:#2a4344;--accent:#4cc2b8;--accent-ink:#06211f;--sel:#1d3a3a;--good:#6fd6a0;--goodbg:#173a2b;--bad:#ff9c94;--badbg:#3f1f1e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1b1c;--surface:#152728;--ink:#e6f1ef;--muted:#93aeab;--line:#2a4344;--accent:#4cc2b8;--accent-ink:#06211f;--sel:#1d3a3a;--good:#6fd6a0;--goodbg:#173a2b;--bad:#ff9c94;--badbg:#3f1f1e;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 "Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:680px;margin:0 auto;padding:20px 16px 48px}
+h1{font-size:1.9rem;line-height:1.2;margin:0 0 8px}
+p{margin:0 0 14px}
+.muted{color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px}
+label{display:block;font-weight:700;margin:16px 0 6px}
+input[type=text],select{width:100%;font:inherit;color:inherit;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px}
+button{font:inherit;cursor:pointer;border-radius:10px;border:1.5px solid var(--accent);padding:12px 20px;font-weight:700;background:var(--accent);color:var(--accent-ink)}
+button.ghost{background:transparent;color:var(--accent)}
+button:disabled{opacity:.4;cursor:default}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden;margin:6px 0 18px}
+.bar i{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.top{display:flex;justify-content:space-between;gap:12px;font-size:.95rem;color:var(--muted)}
+.q{font-size:1.2rem;font-weight:700;margin:0 0 16px}
+.opt{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;background:var(--surface);color:var(--ink);border:1.5px solid var(--line);margin-bottom:10px;font-weight:400;padding:13px 14px}
+.opt b{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:.9rem}
+.opt.sel{background:var(--sel);border-color:var(--accent)}
+.opt.sel b{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:20px;flex-wrap:wrap}
+.score{font-size:3rem;font-weight:700;line-height:1.1;margin:4px 0}
+.rev{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px;background:var(--surface)}
+.rev.ok{border-left:6px solid var(--good)}.rev.no{border-left:6px solid var(--bad)}
+.rev p{margin:0 0 8px;font-weight:700}
+.ans{font-size:.98rem;margin:2px 0}
+.ans.c{color:var(--good);font-weight:700}.ans.w{color:var(--bad)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0}
+.tabs button{padding:8px 14px}
+.hide{display:none}
+@media (prefers-reduced-motion:reduce){.bar i{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<section id="start" class="card">
+  <h1>Epidemiology MCQ Exam</h1>
+  <p class="muted">Each question has one correct answer. Questions appear in a random order. There is no time limit. You see your score and the correct answers when you finish.</p>
+  <label for="name">Your name</label>
+  <input id="name" type="text" autocomplete="name" placeholder="Full name">
+  <label for="count">Number of questions</label>
+  <select id="count"></select>
+  <p id="err" class="hide" style="color:var(--bad);margin-top:12px">Enter your name to start.</p>
+  <div class="row"><button id="go">Start exam</button></div>
+</section>
+
+<section id="exam" class="hide">
+  <div class="top"><span id="who"></span><span id="prog"></span></div>
+  <div class="bar"><i id="fill"></i></div>
+  <div class="card">
+    <p class="q" id="qtext"></p>
+    <div id="opts"></div>
+  </div>
+  <div class="nav">
+    <button class="ghost" id="prev">Previous</button>
+    <button id="next">Next</button>
+  </div>
+  <p class="muted" style="margin-top:18px" id="answered"></p>
+</section>
+
+<section id="result" class="hide">
+  <div class="card">
+    <p class="muted" id="rwho"></p>
+    <div class="score" id="rscore"></div>
+    <p id="rline"></p>
+    <p id="sent" class="muted" aria-live="polite"></p>
+    <div class="row">
+      <button id="retry" class="hide">Send again</button>
+      <button id="copy" class="ghost">Copy my result</button>
+      <button class="ghost" id="again">Take again</button>
+    </div>
+    <p id="copied" class="muted hide"></p>
+  </div>
+  <h2 style="margin:26px 0 10px;font-size:1.25rem">Review</h2>
+  <div class="row tabs">
+    <button id="tAll">All</button>
+    <button class="ghost" id="tWrong">Wrong or skipped</button>
+  </div>
+  <div id="review"></div>
+</section>
+
+</main>
+<script type="application/json" id="data">[{"n":1,"q":"The word 'epidemiology' is derived from Greek words meaning?","o":["Disease study","People study","On/Upon, People, Study","Medicine study"],"a":2},{"n":2,"q":"Epidemiology primarily studies:","o":["Organs","Populations","Single patients","Anatomy"],"a":1},{"n":3,"q":"Which of the following answers 'How many?' in epidemiology?","o":["Determinants","Frequency","Distribution","Study"],"a":1},{"n":4,"q":"Clinical medicine treats:","o":["Populations","Patients","Communities","Risk factors"],"a":1},{"n":5,"q":"Descriptive epidemiology answers which set of questions?","o":["Who, where, when, how","Who, where, when, how many","Why and how","How and why"],"a":1},{"n":6,"q":"Analytic epidemiology answers which questions?","o":["How and why","Who and when","How many","Where and when"],"a":0},{"n":7,"q":"Which subfield studies workplace-related health outcomes?","o":["Experimental epidemiology","Clinical epidemiology","Occupational epidemiology","Descriptive epidemiology"],"a":2},{"n":8,"q":"Which of the following is a pandemic?","o":["Dengue in one city","Malaria in Africa","HIV spread worldwide","Typhoid in a village"],"a":2},{"n":9,"q":"Host in the epidemiological triad refers to:","o":["Environment","Human susceptible to disease","Pathogen","Vector"],"a":1},{"n":10,"q":"Example of a biological agent is:","o":["Noise","Virus","Heat","Pesticide"],"a":1},{"n":11,"q":"Which measure counts new cases?","o":["Prevalence","Incidence","Mortality","Morbidity"],"a":1},{"n":12,"q":"Prevalence includes:","o":["Only new cases","Only deaths","New + old cases","Risk factors only"],"a":2},{"n":13,"q":"Pandemic definition includes spread to:","o":["One family","One community","One country","Several countries/continents"],"a":3},{"n":14,"q":"Point prevalence measures:","o":["Over a lifetime","At a specific point in time","Over several years","At birth only"],"a":1},{"n":15,"q":"Attack rate is actually a:","o":["True rate","Ratio","Proportion","Mortality index"],"a":2},{"n":16,"q":"A long-term carrier of Salmonella typhi is an example of:","o":["Incubatory carrier","Convalescent carrier","Chronic carrier","Temporary carrier"],"a":2},{"n":17,"q":"'Typhoid Mary' was an example of:","o":["Pandemic patient","Chronic carrier","Non-human reservoir","Agent"],"a":1},{"n":18,"q":"Which study type uses random assignment?","o":["Case-control","Cohort","Experimental (RCT)","Cross-sectional"],"a":2},{"n":19,"q":"Cross-sectional studies measure:","o":["Incidence","Prevalence","Mortality","Risk ratio"],"a":1},{"n":20,"q":"Case-control studies begin with:","o":["Disease-free group only","Exposed and non-exposed groups","People with and without disease","Population survey"],"a":2},{"n":21,"q":"Which is NOT a feature of epidemiology?","o":["Study of frequency","Study of distribution","Study of anatomy","Study of determinants"],"a":2},{"n":22,"q":"A disease regularly found in a region is called:","o":["Epidemic","Endemic","Pandemic","Sporadic"],"a":1},{"n":23,"q":"The high-risk approach to prevention is:","o":["Less invasive","Always cheaper","Applied to entire populations","Focused on subgroups"],"a":3},{"n":24,"q":"Indirect transmission via mosquito is called:","o":["Vehicle-borne","Droplet spread","Vector-borne","Direct contact"],"a":2},{"n":25,"q":"The natural habitat where an agent lives and multiplies is:","o":["Host","Reservoir","Carrier","Vector"],"a":1},{"n":26,"q":"Incubatory carriers transmit:","o":["After recovery","During incubation period","After 1 year","Only via vectors"],"a":1},{"n":27,"q":"Incidence rate is expressed often per:","o":["100","1,000","100,000","All of the above (arbitrary)"],"a":3},{"n":28,"q":"Person-years measure is used in:","o":["Prevalence","Mortality","Incidence density","Case fatality rate"],"a":2},{"n":29,"q":"Secondary attack rate measures:","o":["Mortality","Community spread vs. household spread","Case fatality ratio","Period prevalence"],"a":1},{"n":30,"q":"Surveillance is mainly used for:","o":["Anatomy","Infectious diseases monitoring","Organ functions","Clinical practice only"],"a":1},{"n":31,"q":"Passive surveillance depends on:","o":["Field visits by staff","Mandatory reporting by providers","Random surveys","Patient interviews"],"a":1},{"n":32,"q":"Active surveillance involves:","o":["Waiting for cases to be reported","Staff actively searching cases","Hospital death records only","Community survey once a decade"],"a":1},{"n":33,"q":"Frequency measures include all EXCEPT:","o":["Ratios","Proportions","Rates","Life span"],"a":3},{"n":34,"q":"Crude mortality rate includes deaths from:","o":["One cause only","All causes","Maternal deaths only","Infant deaths only"],"a":1},{"n":35,"q":"Case fatality rate is a measure of:","o":["Disease burden","Disease severity","Exposure prevalence","Susceptibility"],"a":1},{"n":36,"q":"Relative risk compares:","o":["Exposed vs. unexposed risk","Old vs. new cases","Mortality vs. morbidity","Endemic vs. epidemic"],"a":0},{"n":37,"q":"Quarantine applies to:","o":["Sick individuals","Healthy individuals exposed to infection","Carriers only","Vectors only"],"a":1},{"n":38,"q":"Which is an advantage of cohort studies?","o":["Quick and cheap","Efficient for rare exposures","No loss to follow-up","Good for rare diseases"],"a":1},{"n":39,"q":"Recall bias is mostly seen in:","o":["Cohort studies","Cross-sectional studies","Case-control studies","RCTs"],"a":2},{"n":40,"q":"Which bias arises from loss to follow-up in cohort studies?","o":["Recall bias","Selection bias","Observer bias","Confounding bias"],"a":1},{"n":41,"q":"If in 2007, 4 new cases occurred, the incidence is calculated from:","o":["Only old cases","New cases / population at risk","New + old cases / total population","Prevalence at Jan 1"],"a":1},{"n":42,"q":"A scientist tests vitamin effect on lifespan. IV is:","o":["Lifespan","Vitamin dose","Control group","Placebo"],"a":1},{"n":43,"q":"Nested case-control studies are conducted:","o":["Within a cross-sectional study","Within a cohort study","Independently","After RCTs"],"a":1},{"n":44,"q":"A retrospective cohort study is efficient for:","o":["Rare diseases","Long latent periods","Randomization","Small populations only"],"a":1},{"n":45,"q":"Which is NOT a factor increasing prevalence?","o":["Longer duration of disease","Prolongation of life without cure","In-migration of healthy people","In-migration of susceptible people"],"a":2},{"n":46,"q":"In cohort studies, exposure is measured at:","o":["Baseline","Midpoint","After outcome","Random intervals"],"a":0},{"n":47,"q":"The hallmark of case-control study is:","o":["Disease-free subjects at baseline","Starts with cases and controls","Measures prevalence only","Random assignment of groups"],"a":1},{"n":48,"q":"Which type of error occurs if a new disease lacks standard diagnostic criteria?","o":["Recall bias","Selection bias","Information bias","Survival bias"],"a":2},{"n":49,"q":"Which mortality rate is most used for international comparisons?","o":["Cause-specific mortality rate","Maternal mortality rate","Infant mortality rate","Case fatality rate"],"a":2},{"n":50,"q":"Which study design best establishes cause-effect?","o":["Case-control","Cohort","RCT (experimental)","Cross-sectional"],"a":2},{"n":51,"q":"Which of the following is NOT a determinant in epidemiology?","o":["Host","Agent","Environment","Anatomy"],"a":3},{"n":52,"q":"A psychosocial environment includes:","o":["Soil","Water","Cultural values and beliefs","Radiation"],"a":2},{"n":53,"q":"Which is an endogenous chemical agent?","o":["Dust","Uric acid (gout)","Pesticide","Gas"],"a":1},{"n":54,"q":"Which is an exogenous chemical agent?","o":["Uric acid","Allergens","Immunity","Genetics"],"a":1},{"n":55,"q":"Mortality refers to:","o":["No. of deaths","No. of sick cases","New cases only","Total population"],"a":0},{"n":56,"q":"Morbidity refers to:","o":["Health","Death","Diseased condition","Incubation period"],"a":2},{"n":57,"q":"Incidence measures:","o":["Prevalence of disease","New cases of disease","Total mortality","Population density"],"a":1},{"n":58,"q":"Prevalence measures:","o":["Only old cases","Old + new cases","New cases only","Mortality only"],"a":1},{"n":59,"q":"Which factor decreases prevalence?","o":["Longer duration of disease","High case fatality rate","Increase in new cases","In-migration of susceptible people"],"a":1},{"n":60,"q":"Example of passive surveillance:","o":["Routine case reporting by hospitals","Field visits by staff","National survey with interviews","Active community-based search"],"a":0},{"n":61,"q":"Example of active surveillance:","o":["Hospitals submit annual reports","Staff conduct field visits to detect cases","Census report","WHO mortality data"],"a":1},{"n":62,"q":"Attack rate is mostly used in:","o":["Foodborne outbreaks","Chronic diseases","Cancer studies","Cohort studies"],"a":0},{"n":63,"q":"Which is an infectious disease reservoir?","o":["Humans","Animals","Environment","All of the above"],"a":3},{"n":64,"q":"Case fatality rate measures:","o":["Severity of disease","Burden of disease","Exposure prevalence","Carrier state"],"a":0},{"n":65,"q":"Infant mortality rate is:","o":["Deaths under 5 years / live births","Deaths under 1 year / live births","Deaths under 28 days / live births","Total deaths / total population"],"a":1},{"n":66,"q":"Neonatal mortality rate measures deaths:","o":["<1 year","<28 days","<5 years",">60 years"],"a":1},{"n":67,"q":"Post-neonatal mortality rate refers to deaths between:","o":["Birth to 1 year","28 days to <1 year","1 year to 5 years",">1 year"],"a":1},{"n":68,"q":"Maternal mortality ratio denominator is:","o":["All pregnancies","All women","Live births","Total population"],"a":2},{"n":69,"q":"Quasi-experimental design is used when:","o":["Randomization is possible","Intact groups must be used","No intervention is applied","Only controls are studied"],"a":1},{"n":70,"q":"Cross-sectional studies are best for:","o":["Rare diseases","Fatal diseases","Chronic diseases","Longitudinal diseases only"],"a":2},{"n":71,"q":"The three components of the epidemiological triad are:","o":["Agent, host, environment","Host, patient, hospital","Pathogen, immunity, drug","Gene, environment, nutrition"],"a":0},{"n":72,"q":"Which environment includes climate and soil?","o":["Biological","Psychosocial","Physical","Social"],"a":2},{"n":73,"q":"Biological vectors transmit pathogens by:","o":["Multiplication within their bodies","Carrying outside their bodies only","Non-living surfaces","Droplet contact"],"a":0},{"n":74,"q":"Mechanical vectors transmit pathogens by:","o":["Multiplication inside vector","Carrying organisms externally","Airborne droplets","Injection only"],"a":1},{"n":75,"q":"Outbreaks from single exposure are usually:","o":["Gradual","Explosive","Chronic","Sporadic"],"a":1},{"n":76,"q":"A classic example of a chronic carrier is:","o":["Dengue patient","Typhoid Mary","HIV patient","Flu virus host"],"a":1},{"n":77,"q":"Cumulative incidence assumes:","o":["Different follow-up times","Equal follow-up for all at risk","Mortality only","Only prevalence data"],"a":1},{"n":78,"q":"Person-time denominator is required when:","o":["Everyone is followed for same time","Different follow-up times exist","Study ends early","Mortality rate is measured"],"a":1},{"n":79,"q":"Period prevalence measures:","o":["Cases at one instant","Cases over a time interval","New cases only","Mortality rate"],"a":1},{"n":80,"q":"A ratio differs from a proportion because:","o":["Numerator is part of denominator","Numerator not part of denominator","Always expressed as percentage","Cannot be compared"],"a":1},{"n":81,"q":"An example of a descriptive study is:","o":["RCT","Case report","Cohort study","Case-control study"],"a":1},{"n":82,"q":"Case series describe:","o":["One patient","Multiple similar patients","Random samples only","Cohorts only"],"a":1},{"n":83,"q":"Cohort studies measure:","o":["Prevalence","Incidence","Mortality only","Ratios only"],"a":1},{"n":84,"q":"Prospective cohort studies are:","o":["Less prone to bias","Quicker","Always retrospective","Inefficient for exposures"],"a":0},{"n":85,"q":"Retrospective cohort studies are efficient for:","o":["Long latent diseases","Short diseases","Genetic diseases","Non-disease studies"],"a":0},{"n":86,"q":"Selection bias in cohort studies may occur due to:","o":["Randomization","Loss to follow-up","Genetic errors","Recall bias"],"a":1},{"n":87,"q":"Observer bias is an example of:","o":["Information bias","Selection bias","Confounding","Measurement error only"],"a":0},{"n":88,"q":"Case-control study measures:","o":["Odds of exposure","Incidence rate","Mortality rate","Relative prevalence"],"a":0},{"n":89,"q":"Recall bias occurs when:","o":["Participants forget past exposures","Cases and controls have same recall","Exposure is random","Mortality is misclassified"],"a":0},{"n":90,"q":"In case-control studies, prevalence of disease:","o":["Can be estimated","Cannot be estimated","Always 50%","Always higher in controls"],"a":1},{"n":91,"q":"The secondary attack rate formula is:","o":["New cases / total population","New cases among contacts / total contacts × 10ⁿ","Deaths / live births","Cases / person-time"],"a":1},{"n":92,"q":"Example: 30/99 people eating potato salad became ill. The risk is:","o":["30%","3%","0.3%","10%"],"a":0},{"n":93,"q":"In incidence density, denominator is:","o":["Total population","Average population at risk","Person-time at risk","All deaths"],"a":2},{"n":94,"q":"Which increases prevalence?","o":["High case fatality rate","Shorter duration of disease","In-migration of cases","Improved cure rates"],"a":2},{"n":95,"q":"Which decreases prevalence?","o":["Prolonged life without cure","In-migration of susceptible people","Improved cure rate","Increase in new cases"],"a":2},{"n":96,"q":"Case fatality ratio differs from mortality rate because:","o":["Numerator is deaths from all causes","Numerator is deaths from specific disease / incident cases","Denominator is always mid-year population","Numerator always includes all deaths"],"a":1},{"n":97,"q":"Randomization in RCT helps reduce:","o":["Recall bias","Selection bias","Observer bias","Confounding"],"a":3},{"n":98,"q":"Community intervention trials are:","o":["Individual-level studies","Preventive trials at population level","Always retrospective","Case series"],"a":1},{"n":99,"q":"If incidence in exposed = 20/100 and incidence in unexposed = 5/100, RR = ?","o":["4","2","0.25","5"],"a":0},{"n":100,"q":"Which study design is most prone to recall bias?","o":["Cohort","Case-control","RCT","Cross-sectional"],"a":1},{"n":101,"q":"The Greek root word 'demos' means:","o":["Disease","People","Study","Host"],"a":1},{"n":102,"q":"Epidemiology mainly applies to:","o":["Individual treatment","Population health","Organs only","Anatomy"],"a":1},{"n":103,"q":"Which epidemiology studies 'how and why'?","o":["Descriptive","Analytic","Clinical","Occupational"],"a":1},{"n":104,"q":"Which epidemiology studies 'who, where, when, how many'?","o":["Analytic","Descriptive","Clinical","Experimental"],"a":1},{"n":105,"q":"Clinical epidemiology applies to:","o":["Public health","Clinical decisions and outcomes","Populations only","Laboratory diagnosis only"],"a":1},{"n":106,"q":"Which type of epidemiology confirms causal relationships?","o":["Descriptive","Experimental","Occupational","Observational"],"a":1},{"n":107,"q":"Which is an objective of epidemiology?","o":["To identify etiology of disease","To measure frequency only","To study anatomy","To treat individual patients only"],"a":0},{"n":108,"q":"The population-based prevention approach is also called:","o":["Clinical approach","Public health approach","Laboratory approach","Hospital-based approach"],"a":1},{"n":109,"q":"Example of a high-risk prevention approach is:","o":["Advice against smoking for all","Screening high-risk group for TB","National vaccination program","Safe drinking water for all"],"a":1},{"n":110,"q":"Epidemic is defined as:","o":["Disease constant in a region","Disease outbreak rapidly affecting many people","Worldwide spread","Small outbreak"],"a":1},{"n":111,"q":"Pandemic is defined as:","o":["Regional outbreak","Epidemic across countries/continents","Sporadic spread","Carrier transmission"],"a":1},{"n":112,"q":"An example of direct transmission is:","o":["Mosquito bite","Contaminated water","Sexual contact","Dust inhalation"],"a":2},{"n":113,"q":"Vector-borne transmission by ticks is:","o":["Biological vector","Mechanical vector","Vehicle-borne","Direct contact"],"a":0},{"n":114,"q":"Which is a physical environmental factor?","o":["Climate","Insects","Cultural values","Smoking"],"a":0},{"n":115,"q":"A healthy person separated from infected ones is:","o":["Isolation","Quarantine","Segregation","Eradication"],"a":2},{"n":116,"q":"Isolation is applied to:","o":["Healthy exposed people","Sick contagious people","Carriers only","Entire population"],"a":1},{"n":117,"q":"Which method aims to permanently reduce incidence to zero?","o":["Quarantine","Control","Eradication","Segregation"],"a":2},{"n":118,"q":"Example of eradicated disease:","o":["Malaria","Smallpox","Tuberculosis","Cholera"],"a":1},{"n":119,"q":"Which disease still exists as endemic in some parts of Africa?","o":["Dengue","Malaria","HIV","COVID-19"],"a":1},{"n":120,"q":"The denominator in infant mortality rate is:","o":["Total population","All births (live + still)","Live births","Pregnant women"],"a":2},{"n":121,"q":"Epidemiology answers six questions, which include all EXCEPT:","o":["How many","Who","Where","Which organ"],"a":3},{"n":122,"q":"The psychosocial environment includes all EXCEPT:","o":["Morals","Health services","Radiation","Sanitation"],"a":2},{"n":123,"q":"A disease outbreak from a contaminated water supply is:","o":["Direct transmission","Vehicle-borne","Vector-borne","Droplet spread"],"a":1},{"n":124,"q":"Carriers who transmit disease before symptoms appear are:","o":["Convalescent carriers","Chronic carriers","Incubatory carriers","Latent carriers"],"a":2},{"n":125,"q":"Convalescent carriers transmit:","o":["During incubation","After recovery","After 1 year","Through environment only"],"a":1},{"n":126,"q":"Chronic carriers may transmit disease for:","o":["Weeks only","Months or years","1–2 days","During incubation only"],"a":1},{"n":127,"q":"Point prevalence numerator includes:","o":["Old cases only","New cases only","New + old cases at one time","Total deaths"],"a":2},{"n":128,"q":"Attack rate is commonly expressed as:","o":["Person-years","Ratio","Proportion (%)","Rate per 1000"],"a":2},{"n":129,"q":"In epidemiology, a ratio differs from proportion because:","o":["Numerator part of denominator in ratio","Numerator not part of denominator in ratio","Ratio always expressed as %","Proportion cannot be decimal"],"a":1},{"n":130,"q":"A case-control study begins with:","o":["Exposure status","People with/without disease","Randomized assignment","Person-time follow-up"],"a":1},{"n":131,"q":"Cohort studies begin with:","o":["Exposed and non-exposed groups","Diseased and non-diseased groups","Random assignment","Prevalence survey"],"a":0},{"n":132,"q":"Case-control studies are particularly useful for:","o":["Rare exposures","Rare diseases","Long follow-up studies","Experimental treatments"],"a":1},{"n":133,"q":"A cohort is defined as:","o":["A group of cases","A group with common characteristic","A group of controls","A group of random patients"],"a":1},{"n":134,"q":"Nested case-control studies are conducted within:","o":["Cross-sectional study","Cohort study","RCT","Case series"],"a":1},{"n":135,"q":"Which is a disadvantage of prospective cohort studies?","o":["Long follow-up required","Less vulnerable to bias","Good for rare exposures","Clear temporal sequence"],"a":0},{"n":136,"q":"Retrospective cohort studies may suffer from:","o":["Loss to follow-up","Poor exposure data","High recall bias","Randomization issues"],"a":1},{"n":137,"q":"Observer bias occurs when:","o":["Researcher knows exposure status","Population not randomized","Cases recall differently","Sample size is small"],"a":0},{"n":138,"q":"Selection bias in case-control studies may occur due to:","o":["Inappropriate selection of controls","Recall bias","Observer bias","Randomization errors"],"a":0},{"n":139,"q":"Recall bias is also known as:","o":["Rumination bias","Observation bias","Measurement error","Survival bias"],"a":0},{"n":140,"q":"The 'healthy worker effect' is an example of:","o":["Information bias","Selection bias","Recall bias","Observer bias"],"a":1},{"n":141,"q":"Which factor does NOT increase prevalence?","o":["Longer disease duration","Prolongation of life without cure","In-migration of healthy people","In-migration of cases"],"a":2},{"n":142,"q":"If 20 new asthma cases occurred in 645 person-days, incidence rate = ?","o":["0.31/1pd","0.031/1pd","3.1/100pd","Both b and c"],"a":3},{"n":143,"q":"In a cohort study, which is true?","o":["Exposure measured at baseline","Outcome measured before exposure","Always retrospective","Prevalence is measured only"],"a":0},{"n":144,"q":"Case fatality rate formula denominator is:","o":["Mid-year population","Incident cases","All cases (old + new)","Total exposed"],"a":1},{"n":145,"q":"Death-to-case ratio differs from CFR because:","o":["Denominator = incident cases only","Denominator = new cases in same period","Numerator includes deaths from earlier cases","It is a true rate"],"a":2},{"n":146,"q":"Risk ratio (relative risk) formula is:","o":["Incidence in exposed ÷ incidence in unexposed","Prevalence in exposed ÷ prevalence in unexposed","Mortality in exposed ÷ mortality in controls","Risk in cases ÷ risk in controls"],"a":0},{"n":147,"q":"RCT randomization was first developed by:","o":["J.B. Amberson","R.A. Fisher","Typhoid Mary","John Snow"],"a":1},{"n":148,"q":"Which design is least suitable for rare diseases?","o":["Case-control","Cross-sectional","Cohort (prospective)","Retrospective cohort"],"a":2},{"n":149,"q":"The main advantage of community intervention trials is:","o":["Applied at population level","Randomized at patient level","Short-term only","No control group needed"],"a":0},{"n":150,"q":"Which bias can be reduced by masking outcome assessors?","o":["Selection bias","Recall bias","Observer bias","Randomization bias"],"a":2},{"n":151,"q":"Which epidemiology type uses experiments on populations?","o":["Descriptive","Analytical","Experimental","Clinical"],"a":2},{"n":152,"q":"John Snow is famous for studying which disease outbreak?","o":["Tuberculosis","Cholera","Smallpox","Typhoid"],"a":1},{"n":153,"q":"Epidemiology is mainly concerned with:","o":["Lab diagnosis","Population health patterns","Anatomy","Physiology"],"a":1},{"n":154,"q":"Incidence measures are especially useful for:","o":["New cases","Old cases","Both","Carriers only"],"a":0},{"n":155,"q":"Prevalence measures are especially useful for:","o":["Mortality","Burden of chronic diseases","Acute infections only","Risk factors only"],"a":1},{"n":156,"q":"Which is an example of an endemic disease?","o":["Cholera in London, 1854","Malaria in Africa","HIV pandemic","COVID-19 worldwide spread"],"a":1},{"n":157,"q":"Which disease has been globally eradicated?","o":["Polio","Smallpox","Malaria","TB"],"a":1},{"n":158,"q":"Which study is best for rare exposures?","o":["Case-control","Cohort","Cross-sectional","Ecological"],"a":1},{"n":159,"q":"Which study is best for rare diseases?","o":["Case-control","Cohort","Cross-sectional","Ecological"],"a":0},{"n":160,"q":"Which type of study cannot establish temporality?","o":["Cohort","RCT","Cross-sectional","Experimental"],"a":2},{"n":161,"q":"Isolation is applied to:","o":["Healthy exposed persons","Infected patients","Carriers only","Vectors"],"a":1},{"n":162,"q":"Quarantine is applied to:","o":["Healthy persons exposed to infection","Sick persons","Only carriers","Whole populations"],"a":0},{"n":163,"q":"Which is an advantage of descriptive studies?","o":["Quick and inexpensive","Establish causal relationships","Randomization","Eliminate bias completely"],"a":0},{"n":164,"q":"An epidemic curve shows:","o":["Distribution of disease cases over time","Genetic patterns","Cause of outbreak","Host immunity only"],"a":0},{"n":165,"q":"A point epidemic curve indicates:","o":["Single exposure outbreak","Person-to-person spread","Long-term epidemic","Sporadic outbreak"],"a":0},{"n":166,"q":"A propagated epidemic curve suggests:","o":["Single source","Continuous exposure","Person-to-person transmission","Eradication"],"a":2},{"n":167,"q":"Which of the following is an occupational disease?","o":["Tuberculosis in miners","Malaria in Africa","Typhoid fever","Polio"],"a":0},{"n":168,"q":"Carrier state is important in transmission of:","o":["Typhoid","Malaria","Cholera","All of the above"],"a":3},{"n":169,"q":"Passive immunity is obtained by:","o":["Vaccination","Breastfeeding (maternal antibodies)","Infection recovery","Exposure to pathogen"],"a":1},{"n":170,"q":"Active immunity is obtained by:","o":["Antibody injection","Vaccination or natural infection","Maternal transfer","Blood transfusion"],"a":1},{"n":171,"q":"Which is NOT part of the epidemiologic triad?","o":["Host","Agent","Environment","Immunity alone"],"a":3},{"n":172,"q":"An endemic disease in a population has:","o":["Zero incidence","Constant presence","Rapid explosive spread","Worldwide distribution"],"a":1},{"n":173,"q":"In an epidemic curve, a wide plateau indicates:","o":["Common source outbreak","Continuous exposure","Eradication","Pandemic"],"a":1},{"n":174,"q":"Which is the denominator of incidence density?","o":["Total population","Person-time at risk","Mid-year population","Live births"],"a":1},{"n":175,"q":"Case fatality rate is useful for measuring:","o":["Prevalence","Severity of disease","Mortality burden","Immunity levels"],"a":1},{"n":176,"q":"Infant mortality rate is widely used as:","o":["Health indicator of a community","Maternal health only","Clinical tool","Randomized measure"],"a":0},{"n":177,"q":"A high maternal mortality ratio reflects:","o":["Poor obstetric care","Strong health system","High life expectancy","Good nutrition"],"a":0},{"n":178,"q":"Which is an advantage of cross-sectional studies?","o":["Measure prevalence","Establish causality","Useful for rare diseases","Good for temporality"],"a":0},{"n":179,"q":"Nested case-control studies save resources by:","o":["Reducing time and cost","Including all population","Avoiding exposure measurement","Eliminating controls"],"a":0},{"n":180,"q":"Selection bias in cohort studies is also called:","o":["Observer bias","Loss to follow-up bias","Recall bias","Confounding"],"a":1},{"n":181,"q":"The main limitation of ecological studies is:","o":["Ecological fallacy","High cost","Time-consuming","Too much precision"],"a":0},{"n":182,"q":"Case-control studies use which statistical measure?","o":["Relative risk","Odds ratio","Incidence density","Prevalence ratio"],"a":1},{"n":183,"q":"Cohort studies use which measure of association?","o":["Relative risk","Odds ratio","Prevalence ratio","Mortality ratio"],"a":0},{"n":184,"q":"In RCT, blinding is used to prevent:","o":["Selection bias","Observer bias","Recall bias","Survival bias"],"a":1},{"n":185,"q":"Triple blinding means:","o":["Subjects, investigators, and data analysts unaware of assignments","Only patients unaware","Patients and investigators aware","Only analysts blinded"],"a":0},{"n":186,"q":"A placebo is used to:","o":["Increase incidence","Blind participants","Eliminate controls","Bias exposure"],"a":1},{"n":187,"q":"Which study has the highest validity for causality?","o":["Case-control","Cross-sectional","Cohort","RCT"],"a":3},{"n":188,"q":"Which method can control confounding?","o":["Randomization","Stratification","Matching","All of the above"],"a":3},{"n":189,"q":"The main advantage of prospective cohort studies is:","o":["Clear temporal sequence","Short duration","Low cost","Suitable for rare diseases"],"a":0},{"n":190,"q":"The 'gold standard' study design is:","o":["Cross-sectional","Cohort","RCT","Ecological"],"a":2},{"n":191,"q":"In an epidemic curve, repeated peaks suggest:","o":["Point source","Propagated epidemic","Continuous exposure","Eradication"],"a":1},{"n":192,"q":"If 50 cases occurred in 2000 persons over 1 year, incidence = ?","o":["25/1000","50/1000","2.5/100","Both a and c"],"a":3},{"n":193,"q":"If prevalence = incidence × duration, which factor mainly increases prevalence?","o":["Shorter duration","Longer survival without cure","Higher case fatality","Outmigration of cases"],"a":1},{"n":194,"q":"Secondary attack rate excludes:","o":["Index case","Secondary cases","Contacts at risk","Population not exposed"],"a":0},{"n":195,"q":"Information bias includes all EXCEPT:","o":["Misclassification bias","Observer bias","Recall bias","Selection bias"],"a":3},{"n":196,"q":"If relative risk = 1, it means:","o":["No association between exposure and disease","Exposure causes disease","Protective effect","High risk"],"a":0},{"n":197,"q":"If RR < 1, it means:","o":["No association","Risk factor","Protective effect","Bias"],"a":2},{"n":198,"q":"If incidence in exposed = 40/200 and unexposed = 10/200, the relative risk = ?","o":["2","3","4","5"],"a":2},{"n":199,"q":"Odds ratio approximates relative risk when:","o":["Disease is rare","Disease is common","Case-control design","Both a and c"],"a":3},{"n":200,"q":"Randomization in RCT mainly controls for:","o":["Known and unknown confounders","Selection bias only","Recall bias only","Observer bias"],"a":0}]</script>
+<script>
+(function(){
+var BANK=JSON.parse(document.getElementById('data').textContent);
+var L=['A','B','C','D'];
+var $=function(i){return document.getElementById(i)};
+var SHEET_URL='PASTE_YOUR_WEB_APP_URL_HERE';
+var exam=[],ans=[],cur=0,student='',payload=null;
+
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function show(id){['start','exam','result'].forEach(function(s){$(s).classList.toggle('hide',s!==id)});window.scrollTo(0,0)}
+
+var sizes=[20,50,100].filter(function(n){return n<BANK.length});sizes.push(BANK.length);
+$('count').innerHTML=sizes.map(function(n){return '<option value="'+n+'">'+(n===BANK.length?'All '+n:n)+'</option>'}).join('');
+$('count').value=String(BANK.length);
+
+$('go').onclick=function(){
+  var n=$('name').value.trim();
+  if(!n){$('err').classList.remove('hide');$('name').focus();return}
+  student=n;
+  exam=shuffle(BANK).slice(0,parseInt($('count').value,10));
+  ans=exam.map(function(){return -1});cur=0;
+  $('who').textContent=student;
+  show('exam');render();
+};
+function render(){
+  var q=exam[cur];
+  $('qtext').textContent=(cur+1)+'. '+q.q;
+  $('prog').textContent='Question '+(cur+1)+' of '+exam.length;
+  $('fill').style.width=((cur+1)/exam.length*100)+'%';
+  var h='';
+  q.o.forEach(function(o,i){
+    h+='<button class="opt'+(ans[cur]===i?' sel':'')+'" data-i="'+i+'" aria-pressed="'+(ans[cur]===i)+'"><b>'+L[i]+'</b><span></span></button>';
+  });
+  $('opts').innerHTML=h;
+  var sp=$('opts').querySelectorAll('.opt span');
+  q.o.forEach(function(o,i){sp[i].textContent=o});
+  $('prev').disabled=cur===0;
+  var last=cur===exam.length-1;
+  $('next').textContent=last?'Finish exam':'Next';
+  var done=ans.filter(function(a){return a>=0}).length;
+  $('answered').textContent=done+' of '+exam.length+' answered';
+}
+$('opts').onclick=function(e){
+  var b=e.target.closest('.opt');if(!b)return;
+  ans[cur]=parseInt(b.getAttribute('data-i'),10);render();
+};
+$('prev').onclick=function(){if(cur>0){cur--;render()}};
+$('next').onclick=function(){
+  if(cur<exam.length-1){cur++;render();return}
+  var left=ans.filter(function(a){return a<0}).length;
+  if(left&&!confirm('You have '+left+' unanswered question'+(left>1?'s':'')+'. Finish anyway?'))return;
+  finish();
+};
+
+var summary='';
+function finish(){
+  var ok=0;exam.forEach(function(q,i){if(ans[i]===q.a)ok++});
+  var pct=Math.round(ok/exam.length*100);
+  $('rwho').textContent=student;
+  $('rscore').textContent=ok+' / '+exam.length;
+  $('rline').textContent=pct+'% correct, '+(exam.length-ok)+' wrong or skipped.';
+  summary='Epidemiology MCQ Exam\nName: '+student+'\nScore: '+ok+'/'+exam.length+' ('+pct+'%)';
+  $('copied').classList.add('hide');
+  var wrong=[];exam.forEach(function(q,i){if(ans[i]!==q.a)wrong.push(q.n)});
+  payload={name:student,score:ok,total:exam.length,percent:pct,wrong:wrong};
+  renderReview(false);show('result');send();
+}
+function send(){
+  var st=$('sent'),rb=$('retry');rb.classList.add('hide');
+  if(SHEET_URL.indexOf('https://')!==0){st.textContent='Your result was not sent because the Google Sheet is not connected yet. Tap Copy my result and send it to your teacher.';return}
+  st.textContent='Sending your result…';
+  fetch(SHEET_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(payload)})
+   .then(function(){st.textContent='Your result was sent to your teacher.'})
+   .catch(function(){st.textContent='Could not send. Check your internet, then tap Send again.';rb.classList.remove('hide')});
+}
+$('retry').onclick=send;
+function renderReview(onlyWrong){
+  var h='';
+  exam.forEach(function(q,i){
+    var good=ans[i]===q.a;
+    if(onlyWrong&&good)return;
+    h+='<div class="rev '+(good?'ok':'no')+'"><p></p><div class="ans '+(good?'c':'w')+'"></div>'+(good?'':'<div class="ans c"></div>')+'</div>';
+  });
+  $('review').innerHTML=h||'<p class="muted">Nothing here. Every answer was correct.</p>';
+  var els=$('review').querySelectorAll('.rev'),k=0;
+  exam.forEach(function(q,i){
+    var good=ans[i]===q.a;
+    if(onlyWrong&&good)return;
+    var el=els[k++],a=el.querySelectorAll('.ans');
+    el.querySelector('p').textContent=(i+1)+'. '+q.q;
+    a[0].textContent=(good?'Correct: ':'Your answer: ')+(ans[i]<0?'Not answered':L[ans[i]]+') '+q.o[ans[i]]);
+    if(a[1])a[1].textContent='Correct answer: '+L[q.a]+') '+q.o[q.a];
+  });
+  $('tAll').className=onlyWrong?'ghost':'';$('tWrong').className=onlyWrong?'':'ghost';
+}
+$('tAll').onclick=function(){renderReview(false)};
+$('tWrong').onclick=function(){renderReview(true)};
+$('copy').onclick=function(){
+  var m=$('copied');
+  function ok(){m.textContent='Copied. Send it to your teacher.';m.classList.remove('hide')}
+  function no(){m.textContent=summary.replace(/\n/g,' | ');m.classList.remove('hide')}
+  try{navigator.clipboard.writeText(summary).then(ok,no)}catch(e){no()}
+};
+$('again').onclick=function(){show('start')};
+})();
+</script>
+</body>
+</html>
